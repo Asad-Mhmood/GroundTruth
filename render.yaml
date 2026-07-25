@@ -1,0 +1,21 @@
+# Render Blueprint — deploys the FastAPI backend on the free tier.
+# Note: Render reads render.yaml from the repository root, which is why this
+# file lives here instead of backend/ (rootDir points Render at backend/).
+services:
+  - type: web
+    name: vidpoint-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: YOUTUBE_API_KEY
+        sync: false # set in the Render dashboard — never commit keys
+      - key: GEMINI_API_KEY
+        sync: false # set in the Render dashboard — never commit keys
+      - key: ALLOWED_ORIGINS
+        sync: false # e.g. https://your-app.vercel.app,http://localhost:5173
