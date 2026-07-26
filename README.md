@@ -124,7 +124,7 @@ PythonAnywhere's WSGI hosting via `a2wsgi`.
    `YOUR_REPO` with your values:
 
    ```bash
-   git clone https://github.com/YOUR_GITHUB/YOUR_REPO.git
+   git clone -b production https://github.com/YOUR_GITHUB/YOUR_REPO.git
    cd YOUR_REPO/backend
    mkvirtualenv vidpoint --python=python3.11
    pip install -r requirements.txt
@@ -175,7 +175,9 @@ Render free instances sleep after ~15 min of inactivity; the frontend's
 
 1. On <https://vercel.com>: **Add New → Project**, import the same repo.
 2. Set **Root Directory** to `frontend` (framework preset: Vite — detected
-   automatically).
+   automatically). If your repo's default branch is not `production`, set the
+   production branch to `production` under **Settings → Environments →
+   Production** after importing.
 3. Add environment variable `VITE_API_URL` = your backend URL
    (e.g. `https://YOUR_USERNAME.pythonanywhere.com`, no trailing slash).
 4. Deploy and note your site URL, e.g. `https://vidpoint.vercel.app`.
