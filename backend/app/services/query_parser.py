@@ -22,7 +22,7 @@ no preamble, no trailing text:
 
 Rules:
 - search_topic: keyword-style, in the language most likely used by relevant videos.
-- channel_name: only a real channel/person the user explicitly names (e.g. "Dhruv Rathee"). Never invent one.
+- channel_name: only a real channel/person the user explicitly names (e.g. "WildLens by Abrar"). Never invent one.
 - language: e.g. "hi" for Hindi, "ur" for Urdu, "en" for English. If the query is written in Hindi/Urdu, that implies the language.
 - original_question must stay a self-contained question.
 

@@ -8,9 +8,9 @@ import LoadingSteps from "./components/LoadingSteps.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 
 const EXAMPLE_QUERIES = [
-  "Taxi fare from Almaty city center to the railway station",
-  "Burj Khalifa 124th floor ticket price",
-  "Best time of year to visit Hunza Valley",
+  "How much is the Burj Khalifa 124th floor ticket?",
+  "Best time of year to visit Skardu valley",
+  "Where did WildLens by Abrar film snow leopards?",
 ];
 
 const RETRY_DELAY_MS = 12000;

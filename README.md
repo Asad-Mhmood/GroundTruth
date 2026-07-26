@@ -181,7 +181,7 @@ Never commit `.env` files — they are git-ignored.
 
 1. "What is the taxi fare from Almaty city center to Almaty railway station?" → travel-vlog results with working timestamped links.
 2. "Burj Khalifa 124th floor ticket price" → timestamps land where prices are discussed.
-3. "Video where Dhruv Rathee discusses his views on Rahul Gandhi" → channel filter extracted and applied.
+3. "Where did WildLens by Abrar film snow leopards?" → channel filter extracted and applied.
 4. Hindi query → Hindi summaries.
 5. Nonsense query → clean empty state, no crash.
 6. Missing API keys → clear backend startup error.

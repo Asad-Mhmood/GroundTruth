@@ -53,7 +53,7 @@ export default function FilterPanel({
               type="text"
               value={channel}
               onChange={(event) => onChannelChange(event.target.value)}
-              placeholder="e.g. Dhruv Rathee"
+              placeholder="e.g. WildLens by Abrar"
               maxLength={100}
               disabled={disabled}
               className="w-full rounded-xl border-0 bg-slate-50 px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
