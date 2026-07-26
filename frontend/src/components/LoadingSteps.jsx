@@ -56,8 +56,8 @@ export default function LoadingSteps({ waking }) {
       {waking && (
         <p className="mt-5 flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
           <CloudSun className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          The free backend is waking up from sleep — the first search can take
-          30–60 seconds. Retrying automatically…
+          The free backend is slow to respond right now — the first search can
+          take up to a minute. Retrying automatically…
         </p>
       )}
     </div>

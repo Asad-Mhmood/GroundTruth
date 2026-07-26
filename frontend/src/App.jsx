@@ -168,8 +168,8 @@ export default function App() {
               </p>
               {error?.retryable && (
                 <p className="mt-2 text-xs leading-relaxed text-slate-400">
-                  The free backend sleeps when idle — the first request after a
-                  while can take 30–60 seconds to wake it up.
+                  The backend runs on free hosting — the first request after a
+                  quiet period can take up to a minute.
                 </p>
               )}
               <button

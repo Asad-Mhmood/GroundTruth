@@ -112,40 +112,76 @@ Open <http://localhost:5173>.
 
 ## 3. Deploy for free
 
-### Backend → Render (free tier)
+### Backend → PythonAnywhere (free, no card required)
 
-**Option A — Blueprint (recommended).** `render.yaml` at the repo root already
-describes the service.
+The backend ships with `backend/wsgi.py`, which bridges FastAPI (ASGI) to
+PythonAnywhere's WSGI hosting via `a2wsgi`.
 
 1. Push this repo to GitHub.
-2. On <https://render.com> (free account): **New → Blueprint**, pick the repo,
-   and apply.
-3. When prompted, fill in the environment variables:
-   - `YOUTUBE_API_KEY` — your key
-   - `GEMINI_API_KEY` — your key
-   - `ALLOWED_ORIGINS` — your Vercel URL once you have it, e.g.
-     `https://vidpoint.vercel.app,http://localhost:5173`
-4. Deploy and note the backend URL, e.g. `https://vidpoint-backend.onrender.com`.
+2. Create a free **Beginner** account at <https://www.pythonanywhere.com>
+   (no credit card asked).
+3. Open a **Bash console** (Consoles tab) and run — replace `YOUR_GITHUB` and
+   `YOUR_REPO` with your values:
 
-**Option B — manual web service.** New → Web Service → pick the repo, set
-**Root Directory** `backend`, build command `pip install -r requirements.txt`,
-start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`, health check
-path `/health`, plan **Free**, and add the same environment variables.
+   ```bash
+   git clone https://github.com/YOUR_GITHUB/YOUR_REPO.git
+   cd YOUR_REPO/backend
+   mkvirtualenv vidpoint --python=python3.11
+   pip install -r requirements.txt
+   cp .env.example .env
+   nano .env    # paste YOUTUBE_API_KEY, GEMINI_API_KEY, save with Ctrl+O, exit Ctrl+X
+   ```
 
-> **Free-tier note:** Render free instances **sleep after ~15 minutes of
-> inactivity**; the next request takes ~30–60 s while the instance wakes. The
-> frontend pings `/health` on page load and auto-retries to smooth this over.
+   (You'll come back to set `ALLOWED_ORIGINS` after the Vercel deploy.)
+4. Go to the **Web** tab → **Add a new web app** → your free domain →
+   **Manual configuration** → **Python 3.11**.
+5. On the web app page set:
+   - **Virtualenv:** `/home/YOUR_USERNAME/.virtualenvs/vidpoint`
+   - **WSGI configuration file** (click it to edit) — replace the whole file with:
+
+   ```python
+   import sys
+
+   PROJECT_PATH = "/home/YOUR_USERNAME/YOUR_REPO/backend"
+   if PROJECT_PATH not in sys.path:
+       sys.path.insert(0, PROJECT_PATH)
+
+   from wsgi import application  # noqa: E402,F401
+   ```
+6. Click the green **Reload** button, then open
+   `https://YOUR_USERNAME.pythonanywhere.com/health` — you should see
+   `{"status": "ok"}`.
+
+> **PythonAnywhere free-tier notes:**
+> - Web apps don't sleep, but they **expire after 3 months** unless you press
+>   the "Run until…" extend button on the Web tab (a reminder email is sent).
+> - Free accounts route outbound traffic through a proxy with an allowlist.
+>   The YouTube Data API and Gemini (both `*.googleapis.com`) are allowed;
+>   transcript downloads from `youtube.com` may be blocked — if so, searches
+>   return the friendly "no readable captions" message. Test after deploying.
+> - To update the app later: `cd YOUR_REPO && git pull`, then Reload on the
+>   Web tab.
+
+<details>
+<summary>Alternative: Render (works too, but asks for a card on sign-up)</summary>
+
+`render.yaml` at the repo root describes the service: **New → Blueprint**,
+pick the repo, fill in `YOUTUBE_API_KEY`, `GEMINI_API_KEY`, `ALLOWED_ORIGINS`.
+Render free instances sleep after ~15 min of inactivity; the frontend's
+`/health` ping and auto-retry smooth over the ~30–60 s wake-up.
+</details>
 
 ### Frontend → Vercel
 
 1. On <https://vercel.com>: **Add New → Project**, import the same repo.
 2. Set **Root Directory** to `frontend` (framework preset: Vite — detected
    automatically).
-3. Add environment variable `VITE_API_URL` = your Render backend URL
-   (e.g. `https://vidpoint-backend.onrender.com`, no trailing slash).
-4. Deploy.
-5. Go back to Render and set `ALLOWED_ORIGINS` to include your Vercel domain
-   (e.g. `https://vidpoint.vercel.app`), then let the service redeploy.
+3. Add environment variable `VITE_API_URL` = your backend URL
+   (e.g. `https://YOUR_USERNAME.pythonanywhere.com`, no trailing slash).
+4. Deploy and note your site URL, e.g. `https://vidpoint.vercel.app`.
+5. Back on PythonAnywhere, edit `backend/.env` and set
+   `ALLOWED_ORIGINS=https://vidpoint.vercel.app,http://localhost:5173`
+   (your real Vercel URL), then hit **Reload** on the Web tab.
 
 ---
 

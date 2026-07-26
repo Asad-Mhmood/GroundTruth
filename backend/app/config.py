@@ -2,10 +2,13 @@
 
 import os
 import sys
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load backend/.env by explicit path so it works no matter what the current
+# working directory is (PythonAnywhere web apps don't start in this folder).
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 class Settings:
