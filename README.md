@@ -156,7 +156,7 @@ path `/health`, plan **Free**, and add the same environment variables.
 | backend | `YOUTUBE_API_KEY` | yes | YouTube Data API v3 key |
 | backend | `GEMINI_API_KEY` | yes | Google Gemini API key |
 | backend | `ALLOWED_ORIGINS` | no (has localhost default) | comma-separated CORS origins |
-| backend | `GEMINI_MODEL` | no (default `gemini-2.5-flash`) | free-tier flash model name |
+| backend | `GEMINI_MODEL` | no (default `gemini-flash-latest`) | free-tier flash model name |
 | frontend | `VITE_API_URL` | yes in production | backend base URL |
 
 Never commit `.env` files — they are git-ignored.
@@ -171,9 +171,11 @@ Never commit `.env` files — they are git-ignored.
   the free quotas.
 - **No captions** — videos without transcripts are skipped silently; if none of
   the candidates have captions you get a clear empty-state message.
-- **Transcripts blocked from cloud IPs** — YouTube occasionally blocks caption
-  requests from data-center IPs. If transcripts always fail on Render but work
-  locally, this is why; it usually recovers, and there is no free workaround.
+- **Transcripts blocked (429 / bot check)** — YouTube blocks the standard
+  caption endpoint on many IPs (data centers, shared ISP connections). The
+  backend automatically falls back to yt-dlp's android player client, which
+  works without cookies on most blocked IPs. If both strategies fail for every
+  video, you'll see the "don't have readable captions" empty state.
 
 ## Manual testing checklist
 

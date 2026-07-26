@@ -1,10 +1,18 @@
-"""Concurrent transcript fetching with 60-second block merging and a 24h cache."""
+"""Concurrent transcript fetching with 60-second block merging and a 24h cache.
+
+Two fetch strategies, tried in order:
+1. youtube-transcript-api — fast, but YouTube blocks it on many IPs (429).
+2. yt-dlp with the "android" player client — slower but reliably bypasses
+   the watch-page bot check without cookies.
+"""
 
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
 from typing import Dict, List, Optional
 
+import requests
+import yt_dlp
 from cachetools import TTLCache
 from youtube_transcript_api import YouTubeTranscriptApi
 
@@ -62,7 +70,25 @@ def _get_blocks(video_id: str, language: Optional[str]) -> Optional[List[Dict]]:
     return blocks
 
 
+def _preferred_langs(language: Optional[str]) -> List[str]:
+    langs = []
+    for lang in (language, "en"):
+        if lang and lang not in langs:
+            langs.append(lang)
+    return langs
+
+
 def _fetch_raw_segments(video_id: str, language: Optional[str]) -> Optional[List[Dict]]:
+    """Try youtube-transcript-api first, then fall back to yt-dlp."""
+    segments = _fetch_via_transcript_api(video_id, language)
+    if segments is None:
+        segments = _fetch_via_ytdlp(video_id, language)
+    return segments
+
+
+def _fetch_via_transcript_api(
+    video_id: str, language: Optional[str]
+) -> Optional[List[Dict]]:
     """Pick the best available transcript track.
 
     Priority: detected language -> English -> any available,
@@ -71,16 +97,13 @@ def _fetch_raw_segments(video_id: str, language: Optional[str]) -> Optional[List
     try:
         transcript_list = YouTubeTranscriptApi().list(video_id)
     except Exception:
-        return None  # transcripts disabled, video unavailable, etc.
+        return None  # IP blocked, transcripts disabled, video unavailable, etc.
 
     manual, generated = [], []
     for transcript in transcript_list:
         (generated if transcript.is_generated else manual).append(transcript)
 
-    preferred_langs = []
-    for lang in (language, "en"):
-        if lang and lang not in preferred_langs:
-            preferred_langs.append(lang)
+    preferred_langs = _preferred_langs(language)
 
     ordered = []
     for group in (manual, generated):
@@ -101,6 +124,81 @@ def _fetch_raw_segments(video_id: str, language: Optional[str]) -> Optional[List
             return transcript.fetch().to_raw_data()
         except Exception:
             continue
+    return None
+
+
+_YTDLP_OPTS = {
+    "skip_download": True,
+    "quiet": True,
+    "no_warnings": True,
+    # The android player client bypasses the watch-page bot check that blocks
+    # plain HTTP clients (and youtube-transcript-api) on many IPs.
+    "extractor_args": {"youtube": {"player_client": ["android"]}},
+}
+
+
+def _fetch_via_ytdlp(video_id: str, language: Optional[str]) -> Optional[List[Dict]]:
+    try:
+        with yt_dlp.YoutubeDL(dict(_YTDLP_OPTS)) as ydl:
+            info = ydl.extract_info(
+                f"https://www.youtube.com/watch?v={video_id}", download=False
+            )
+    except Exception as exc:
+        logger.info("yt-dlp extract failed for %s: %s", video_id, str(exc)[:200])
+        return None
+
+    manual = info.get("subtitles") or {}
+    auto = info.get("automatic_captions") or {}
+    preferred_langs = _preferred_langs(language)
+
+    # Same priority as the primary path: preferred languages first, manual
+    # tracks before auto-generated ones, then anything else that's available.
+    candidates: List[List[Dict]] = []
+    added = set()
+
+    def add(group: Dict, group_name: str, lang_filter: Optional[str]) -> None:
+        for key, tracks in group.items():
+            if lang_filter and key.split("-")[0].lower() != lang_filter:
+                continue
+            marker = (group_name, key)
+            if marker not in added and tracks:
+                added.add(marker)
+                candidates.append(tracks)
+
+    for group, group_name in ((manual, "manual"), (auto, "auto")):
+        for lang in preferred_langs:
+            add(group, group_name, lang)
+    add(manual, "manual", None)
+    add(auto, "auto", None)
+
+    for tracks in candidates:
+        fmt = next((t for t in tracks if t.get("ext") == "json3" and t.get("url")), None)
+        if not fmt:
+            continue
+        try:
+            response = requests.get(fmt["url"], timeout=20)
+            if response.status_code != 200:
+                continue
+            events = response.json().get("events") or []
+        except Exception:
+            continue
+        segments = []
+        for event in events:
+            segs = event.get("segs")
+            if not segs:
+                continue
+            text = "".join(s.get("utf8", "") for s in segs).strip()
+            if not text:
+                continue
+            segments.append(
+                {
+                    "text": text,
+                    "start": (event.get("tStartMs") or 0) / 1000.0,
+                    "duration": (event.get("dDurMs") or 0) / 1000.0,
+                }
+            )
+        if segments:
+            return segments
     return None
 
 

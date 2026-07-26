@@ -6,4 +6,5 @@ requests>=2.32,<3
 cachetools>=5.3,<7
 slowapi>=0.1.9,<0.2
 youtube-transcript-api>=1.0,<2
+yt-dlp>=2025.1.1
 google-genai>=1.0,<2

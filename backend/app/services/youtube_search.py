@@ -1,5 +1,6 @@
 """YouTube Data API v3 wrapper with a 1-hour TTL cache."""
 
+import html
 import logging
 from threading import Lock
 from typing import Dict, List, Optional
@@ -66,8 +67,8 @@ def search_videos(
         videos.append(
             {
                 "video_id": video_id,
-                "title": snippet.get("title", "Untitled video"),
-                "channel_title": snippet.get("channelTitle", "Unknown channel"),
+                "title": html.unescape(snippet.get("title", "Untitled video")),
+                "channel_title": html.unescape(snippet.get("channelTitle", "Unknown channel")),
                 "published_at": (snippet.get("publishedAt") or "")[:10],
                 "thumbnail_url": thumb.get("url", ""),
             }

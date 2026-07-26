@@ -12,7 +12,9 @@ class Settings:
     def __init__(self) -> None:
         self.youtube_api_key: str = os.getenv("YOUTUBE_API_KEY", "").strip()
         self.gemini_api_key: str = os.getenv("GEMINI_API_KEY", "").strip()
-        self.gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+        # "gemini-flash-latest" is a free-tier alias that always points to the
+        # current stable Flash model, so it survives model retirements.
+        self.gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-flash-latest").strip()
 
         raw_origins = os.getenv(
             "ALLOWED_ORIGINS",
