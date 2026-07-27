@@ -42,7 +42,7 @@ class Settings:
             sys.stderr.write(
                 "\n"
                 + "=" * 62
-                + "\n  VidPoint backend cannot start: missing environment "
+                + "\n  GroundTruth backend cannot start: missing environment "
                 + ("variable" if len(missing) == 1 else "variables")
                 + "\n\n"
                 + "".join(f"    - {name}\n" for name in missing)

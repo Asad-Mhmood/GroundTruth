@@ -3,7 +3,7 @@
 # file lives here instead of backend/ (rootDir points Render at backend/).
 services:
   - type: web
-    name: vidpoint-backend
+    name: groundtruth-backend
     runtime: python
     plan: free
     rootDir: backend

@@ -1,4 +1,4 @@
-# Project Specification: VidPoint — YouTube Timestamp Answer Finder
+# Project Specification: GroundTruth — YouTube Timestamp Answer Finder
 
 ## 1. Overview
 
@@ -46,7 +46,7 @@ Do **not** use embeddings, vector databases, Next.js server components, or any d
 ## 4. Repository Structure (monorepo)
 
 ```
-vidpoint/
+groundtruth/
 ├── backend/
 │   ├── app/
 │   │   ├── main.py              # FastAPI app, CORS, routes

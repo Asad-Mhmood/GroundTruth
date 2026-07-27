@@ -1,4 +1,4 @@
-# VidPoint — YouTube Timestamp Answer Finder
+# GroundTruth — YouTube Timestamp Answer Finder
 
 Ask a question in plain language ("What is the taxi fare from Almaty city center
 to the railway station?") and get YouTube links that open at the **exact second
@@ -47,7 +47,7 @@ are cached in memory for 1 hour and transcripts for 24 hours.
 
 1. Go to <https://console.cloud.google.com> and sign in with any Google account.
 2. Click the project dropdown (top bar) → **New Project** → name it (e.g.
-   `vidpoint`) → **Create**, then make sure it is selected.
+   `groundtruth`) → **Create**, then make sure it is selected.
 3. Open **APIs & Services → Library**, search for **"YouTube Data API v3"**,
    open it and click **Enable**.
 4. Go to **APIs & Services → Credentials → + Create Credentials → API key**.
@@ -126,7 +126,7 @@ PythonAnywhere's WSGI hosting via `a2wsgi`.
    ```bash
    git clone -b production https://github.com/YOUR_GITHUB/YOUR_REPO.git
    cd YOUR_REPO/backend
-   mkvirtualenv vidpoint --python=python3.11
+   mkvirtualenv groundtruth --python=python3.11
    pip install -r requirements.txt
    cp .env.example .env
    nano .env    # paste YOUTUBE_API_KEY, GEMINI_API_KEY, save with Ctrl+O, exit Ctrl+X
@@ -136,7 +136,7 @@ PythonAnywhere's WSGI hosting via `a2wsgi`.
 4. Go to the **Web** tab → **Add a new web app** → your free domain →
    **Manual configuration** → **Python 3.11**.
 5. On the web app page set:
-   - **Virtualenv:** `/home/YOUR_USERNAME/.virtualenvs/vidpoint`
+   - **Virtualenv:** `/home/YOUR_USERNAME/.virtualenvs/groundtruth`
    - **WSGI configuration file** (click it to edit) — replace the whole file with:
 
    ```python
@@ -180,9 +180,9 @@ Render free instances sleep after ~15 min of inactivity; the frontend's
    Production** after importing.
 3. Add environment variable `VITE_API_URL` = your backend URL
    (e.g. `https://YOUR_USERNAME.pythonanywhere.com`, no trailing slash).
-4. Deploy and note your site URL, e.g. `https://vidpoint.vercel.app`.
+4. Deploy and note your site URL, e.g. `https://groundtruth.vercel.app`.
 5. Back on PythonAnywhere, edit `backend/.env` and set
-   `ALLOWED_ORIGINS=https://vidpoint.vercel.app,http://localhost:5173`
+   `ALLOWED_ORIGINS=https://groundtruth.vercel.app,http://localhost:5173`
    (your real Vercel URL), then hit **Reload** on the Web tab.
 
 ---

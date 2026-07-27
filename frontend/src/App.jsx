@@ -94,7 +94,7 @@ export default function App() {
           <Play className="ml-0.5 h-5 w-5 fill-white text-white" aria-hidden="true" />
         </span>
         <span className="text-lg font-bold tracking-tight text-slate-900">
-          VidPoint
+          GroundTruth
         </span>
       </header>
 
@@ -235,7 +235,7 @@ export default function App() {
 
       <footer className="border-t border-slate-200 bg-white py-4">
         <p className="text-center text-xs text-slate-400">
-          VidPoint · answers straight from YouTube videos
+          GroundTruth · answers straight from YouTube videos
         </p>
       </footer>
     </div>

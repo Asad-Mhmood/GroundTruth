@@ -1,4 +1,4 @@
-"""VidPoint API — FastAPI app, CORS, rate limiting, and routes."""
+"""GroundTruth API — FastAPI app, CORS, rate limiting, and routes."""
 
 import logging
 
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
-    title="VidPoint API",
+    title="GroundTruth API",
     description="Find YouTube videos with exact timestamps where your question is answered.",
     version="1.0.0",
 )

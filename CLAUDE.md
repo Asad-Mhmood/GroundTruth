@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-VidPoint — a monorepo with two independently deployed apps: a FastAPI backend
+GroundTruth — a monorepo with two independently deployed apps: a FastAPI backend
 (`backend/`) and a React 18 + Vite + Tailwind frontend (`frontend/`). A user
 asks a natural-language question; the backend returns YouTube links that open at
 the exact second the answer is spoken.
